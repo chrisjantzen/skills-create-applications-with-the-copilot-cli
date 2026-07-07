@@ -2,11 +2,14 @@
 
 /**
  * Node.js CLI Calculator Application
- * Supports the following basic arithmetic operations:
+ * Supports the following arithmetic operations:
  * - Addition (+)
  * - Subtraction (-)
  * - Multiplication (*)
  * - Division (/)
+ * - Modulo (%)
+ * - Exponentiation (^)
+ * - Square Root (√)
  */
 
 const readline = require('readline');
@@ -35,19 +38,40 @@ function divide(a, b) {
   return a / b;
 }
 
+function modulo(a, b) {
+  if (b === 0) {
+    throw new Error('Cannot calculate modulo with zero divisor');
+  }
+  return a % b;
+}
+
+function power(base, exponent) {
+  return Math.pow(base, exponent);
+}
+
+function squareRoot(n) {
+  if (n < 0) {
+    throw new Error('Cannot calculate square root of a negative number');
+  }
+  return Math.sqrt(n);
+}
+
 function displayMenu() {
   console.log('\n=== Simple Calculator ===');
   console.log('1. Addition');
   console.log('2. Subtraction');
   console.log('3. Multiplication');
   console.log('4. Division');
-  console.log('5. Exit');
+  console.log('5. Modulo');
+  console.log('6. Power/Exponentiation');
+  console.log('7. Square Root');
+  console.log('8. Exit');
   console.log('========================\n');
 }
 
 function promptOperation() {
   displayMenu();
-  rl.question('Choose an operation (1-5): ', (choice) => {
+  rl.question('Choose an operation (1-8): ', (choice) => {
     switch (choice) {
       case '1':
         performAddition();
@@ -62,6 +86,15 @@ function promptOperation() {
         performDivision();
         break;
       case '5':
+        performModulo();
+        break;
+      case '6':
+        performPower();
+        break;
+      case '7':
+        performSquareRoot();
+        break;
+      case '8':
         console.log('Thank you for using the calculator!');
         rl.close();
         break;
@@ -138,7 +171,58 @@ function performDivision() {
   });
 }
 
-module.exports = { add, subtract, multiply, divide };
+function performModulo() {
+  rl.question('Enter dividend (first number): ', (a) => {
+    rl.question('Enter divisor (second number): ', (b) => {
+      try {
+        const num1 = parseFloat(a);
+        const num2 = parseFloat(b);
+        if (isNaN(num1) || isNaN(num2)) throw new Error('Invalid input');
+        const result = modulo(num1, num2);
+        console.log(`Result: ${num1} % ${num2} = ${result}`);
+        promptOperation();
+      } catch (error) {
+        console.log(`Error: ${error.message}`);
+        promptOperation();
+      }
+    });
+  });
+}
+
+function performPower() {
+  rl.question('Enter base: ', (base) => {
+    rl.question('Enter exponent: ', (exp) => {
+      try {
+        const baseNum = parseFloat(base);
+        const expNum = parseFloat(exp);
+        if (isNaN(baseNum) || isNaN(expNum)) throw new Error('Invalid input');
+        const result = power(baseNum, expNum);
+        console.log(`Result: ${baseNum} ^ ${expNum} = ${result}`);
+        promptOperation();
+      } catch (error) {
+        console.log(`Error: ${error.message}`);
+        promptOperation();
+      }
+    });
+  });
+}
+
+function performSquareRoot() {
+  rl.question('Enter number: ', (input) => {
+    try {
+      const num = parseFloat(input);
+      if (isNaN(num)) throw new Error('Invalid input');
+      const result = squareRoot(num);
+      console.log(`Result: √${num} = ${result}`);
+      promptOperation();
+    } catch (error) {
+      console.log(`Error: ${error.message}`);
+      promptOperation();
+    }
+  });
+}
+
+module.exports = { add, subtract, multiply, divide, modulo, power, squareRoot };
 
 if (require.main === module) {
   console.log('Welcome to the Node.js CLI Calculator!');
